@@ -1,16 +1,16 @@
 import { ActionIcon, Box, Checkbox, Divider, Group, Stack, Text, Tooltip } from "@mantine/core";
 import { useSet } from "@mantine/hooks";
 import { modals } from "@mantine/modals";
-import { IconFold, IconStar, IconTrash } from "@tabler/icons-react";
+import { IconFold, IconStar, IconTrash, IconCloudDown } from "@tabler/icons-react";
 import { useAtomValue } from "jotai";
 import { useEffect, useMemo, type CSSProperties, type ReactNode } from "react";
 import AutoSizer from "react-virtualized-auto-sizer";
 import { FixedSizeList } from "react-window";
 
-import { favoriteEntryIdsSetAtom } from "~popup/states/atoms";
+import { favoriteEntryIdsSetAtom, settingsAtom } from "~popup/states/atoms";
 import { addFavoriteEntryIds, deleteFavoriteEntryIds } from "~storage/favoriteEntryIds";
-import type { Entry } from "~types/entry";
-import { deleteEntries } from "~utils/storage";
+import { Entry } from "~types/entry";
+import { createEntry, deleteEntries } from "~utils/storage";
 import { commonActionIconSx, defaultBorderColor } from "~utils/sx";
 
 import { EntryRow } from "./EntryRow";
@@ -44,6 +44,7 @@ const EntryRowRenderer = ({
 
 export const EntryList = ({ entries, noEntriesOverlay }: Props) => {
   const favoriteEntryIdsSet = useAtomValue(favoriteEntryIdsSetAtom);
+  const settings = useAtomValue(settingsAtom);
 
   const selectedEntryIds = useSet<string>();
   const entryIdsStringified = useMemo(() => JSON.stringify(entries.map(({ id }) => id)), [entries]);
@@ -51,7 +52,23 @@ export const EntryList = ({ entries, noEntriesOverlay }: Props) => {
   useEffect(() => {
     selectedEntryIds.clear();
   }, [entryIdsStringified]);
-
+  const cloudSyncDown = async () => {
+    const response = await fetch(`${settings.cloudUrl}/1`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+        'x-token': settings.cloudSk,
+        'accept': 'application/json'
+      }
+    });
+    if (response.ok) {
+      const data = await response.json()
+      const parsed = Entry.safeParse(data);
+      if (parsed.success) {
+        await createEntry(parsed.data.content)
+      }
+    }
+  } 
   return (
     <Stack
       h="100%"
@@ -113,6 +130,21 @@ export const EntryList = ({ entries, noEntriesOverlay }: Props) => {
                 }
               >
                 <IconTrash size="1rem" />
+              </ActionIcon>
+            </Tooltip>
+            <Tooltip label={<Text fz="xs">Sync</Text>} >
+              <ActionIcon
+                // sx={(theme) =>}
+                onClick={
+                  (e) => {
+                    e.stopPropagation();
+                    if (settings.cloudUrl) {
+                      cloudSyncDown()
+                    }
+                  }
+                }
+              >
+                <IconCloudDown size="1rem" />
               </ActionIcon>
             </Tooltip>
             {/* https://github.com/clauderic/dnd-kit/issues/1043 */}

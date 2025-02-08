@@ -20,6 +20,7 @@ import { badgeDateFormatter } from "~utils/date";
 import { commonActionIconSx, defaultBorderColor, lightOrDark } from "~utils/sx";
 
 import { EntryDeleteAction } from "./EntryDeleteAction";
+import { EntryCloudSyncAction } from "./EntryCloudSyncAction";
 import { EntryFavoriteAction } from "./EntryFavoriteAction";
 import { EditEntryModalContent } from "./modals/EditEntryModalContent";
 import { TagBadge } from "./TagBadge";
@@ -136,6 +137,7 @@ export const EntryRow = ({ entry, selectedEntryIds }: Props) => {
           </ActionIcon>
           <EntryFavoriteAction entryId={entry.id} />
           <EntryDeleteAction entryId={entry.id} />
+          <EntryCloudSyncAction entryId={entry.id} />
         </Group>
       </Group>
       <Divider sx={(theme) => ({ borderColor: defaultBorderColor(theme) })} />

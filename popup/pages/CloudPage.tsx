@@ -1,29 +1,37 @@
-import { Button, Stack, Text, Title } from "@mantine/core";
+import { Stack, TextInput, PasswordInput, Title, Group } from "@mantine/core";
 
-import { EntryList } from "~popup/components/EntryList";
+import { defaultBorderColor } from "~utils/sx";
+import { getSettings, setSettings } from "~storage/settings";
+import { useAtomValue } from "jotai";
+import { settingsAtom } from "~popup/states/atoms";
+
 
 export const CloudPage = () => {
+
+ const settings = useAtomValue(settingsAtom);
   return (
-    <EntryList
-      noEntriesOverlay={
-        <Stack align="center" spacing="xs" p="xl">
-          <Title order={4}>Optionally Sync Your Clipboard History Everywhere - Coming Soon</Title>
-          <Text size="sm" w={500} align="center">
-            Privately and securely sync your clipboard history across all your devices. Be the first
-            to know when clipboard syncing launches!
-          </Text>
-          <Button
-            size="xs"
-            mt="xs"
-            component="a"
-            href="https://www.clipboardhistory.io/cloud"
-            target="_blank"
-          >
-            Get Notified
-          </Button>
+    <Stack
+      h="100%"
+      spacing={0}
+      sx={(theme) => ({
+        borderStyle: "solid",
+        borderWidth: "1px",
+        borderColor: defaultBorderColor(theme),
+        borderRadius: theme.radius.sm,
+      })}
+    >
+      <Group mb={5} spacing="sm" noWrap px="sm">
+        <Stack spacing="xs" p="xl">
+          <Title order={4}>CloudSync</Title>
+          <TextInput label="url" placeholder="https://" value={settings.cloudUrl} onChange={(e) => e && setSettings({...settings, cloudUrl: e.currentTarget.value})} />
+          <PasswordInput
+           value={settings.cloudSk}
+           onChange={(e) => e && setSettings({...settings, cloudSk: e.currentTarget.value})}
+           placeholder=""
+           label="Password"
+          />
         </Stack>
-      }
-      entries={[]}
-    />
+      </Group>
+    </Stack>
   );
 };

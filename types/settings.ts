@@ -12,6 +12,8 @@ export const defaultSettings = {
   themeV2: "system",
   localItemLimit: null,
   localItemCharacterLimit: null,
+  cloudSk: "",
+  cloudUrl: "",
 };
 
 export const Settings = z
@@ -24,6 +26,8 @@ export const Settings = z
     themeV2: z.string().default(defaultSettings.themeV2),
     localItemLimit: z.number().nullable().default(defaultSettings.localItemLimit),
     localItemCharacterLimit: z.number().nullable().default(defaultSettings.localItemCharacterLimit),
+    cloudSk: z.string().default(defaultSettings.cloudSk),
+    cloudUrl: z.string().default(defaultSettings.cloudUrl),
   })
   .default(defaultSettings);
 export type Settings = z.infer<typeof Settings>;
