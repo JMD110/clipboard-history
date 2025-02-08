@@ -132,9 +132,9 @@ export const EntryList = ({ entries, noEntriesOverlay }: Props) => {
                 <IconTrash size="1rem" />
               </ActionIcon>
             </Tooltip>
-            <Tooltip label={<Text fz="xs">Sync</Text>} >
+            <Tooltip label={<Text fz="xs">Sync</Text>} disabled={!settings.cloudUrl}>
               <ActionIcon
-                // sx={(theme) =>}
+                sx={(theme) => commonActionIconSx({ theme, disabled: !settings.cloudUrl })}
                 onClick={
                   (e) => {
                     e.stopPropagation();
